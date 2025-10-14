@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+     <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Dashboard</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
+      <!-- Usuario info -->
+      <ion-card>
+        <ion-card-content>
+          <div class="user-info">
+            <div class="avatar">{{ userName?.charAt(0) }}</div>
+            <div>
+              <h2>Bienvenido, {{ userName }}</h2>
+              <p>{{ userEmail }}</p>
+              <ion-badge [color]="isCoordinator ? 'primary' : 'secondary'">
+                {{ isCoordinator ? 'Coordinador' : 'Miembro' }}
+              </ion-badge>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Áreas (para coordinadores) -->
+      <div *ngIf="isCoordinator">
+        <ion-card-header>
+          <ion-card-title>Mis Áreas</ion-card-title>
+        </ion-card-header>
+
+        <ion-card *ngFor="let area of areas">
+          <ion-card-header>
+            <ion-card-title>{{ area.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button expand="block" fill="outline" (click)="viewAreaStats(area.id)">
+              <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+              Ver Estadísticas
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <div *ngIf="areas.length === 0 && !loading" class="empty-state">
+          <ion-icon name="briefcase-outline" size="large"></ion-icon>
+          <p>No tienes áreas asignadas</p>
+        </div>
+      </div>
+
+      <!-- Resumen para empleados -->
+      <div *ngIf="!isCoordinator">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Resumen de Tareas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <div class="stat-box">
+                    <h3>{{ taskStats.total }}</h3>
+                    <p>Total</p>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div class="stat-box">
+                    <h3>{{ taskStats.pending }}</h3>
+                    <p>Pendientes</p>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div class="stat-box">
+                    <h3>{{ taskStats.completed }}</h3>
+                    <p>Completadas</p>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <div *ngIf="loading" class="ion-text-center ion-padding">
+        <ion-spinner></ion-spinner>
+      </div>
+    </ion-content>
+</body>
+</html>

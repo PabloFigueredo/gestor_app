@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Iniciar Sesión</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <div class="login-container">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Bienvenido</ion-card-title>
+            <ion-card-subtitle>Ingresa tu email para continuar</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-item>
+              <ion-input 
+                label="Email" 
+                labelPlacement="floating"
+                type="email"
+                [(ngModel)]="email"
+                [disabled]="loading"
+                (keyup.enter)="login()">
+              </ion-input>
+            </ion-item>
+
+            <ion-button 
+              expand="block" 
+              (click)="login()"
+              [disabled]="loading || !email"
+              class="ion-margin-top">
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              <span *ngIf="!loading">Ingresar</span>
+            </ion-button>
+
+            <ion-text color="danger" *ngIf="errorMessage">
+              <p class="ion-text-center">{{ errorMessage }}</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+</body>
+</html>
