@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Perfil</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="profile-header">
+        <div class="avatar-large">{{ userName?.charAt(0) }}</div>
+        <h1>{{ userName }}</h1>
+        <p>{{ userEmail }}</p>
+        <ion-badge [color]="isCoordinator ? 'primary' : 'secondary'">
+          {{ isCoordinator ? 'Coordinador' : 'Miembro' }}
+        </ion-badge>
+      </div>
+
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Información</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>Email</h3>
+            <p>{{ userEmail }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>Nombre</h3>
+            <p>{{ userName }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>Rol</h3>
+            <p>{{ isCoordinator ? 'Coordinador' : 'Miembro del equipo' }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="isCoordinator">
+          <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>Áreas coordinadas</h3>
+            <p>{{ areasCount }} área(s)</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Acciones</ion-label>
+        </ion-list-header>
+
+        <ion-item button (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+          <ion-label color="danger">Cerrar Sesión</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+</body>
+</html>
