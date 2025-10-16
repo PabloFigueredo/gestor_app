@@ -1,0 +1,28 @@
+.stat-box {
+      text-align: center;
+      padding: 16px;
+      background: var(--ion-color-light);
+      border-radius: 8px;
+    }
+    .stat-box h2 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--ion-color-primary);
+    }
+    .stat-box p {
+      margin: 4px 0 0;
+      color: var(--ion-color-medium);
+    }
+    .avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--ion-color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+    }

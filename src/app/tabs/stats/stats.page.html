@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats</title>
+</head>
+<body>
+     <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Estadísticas</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
+      <!-- Selector de área (para coordinadores) -->
+      <ion-card *ngIf="isCoordinator && areas.length > 0">
+        <ion-card-content>
+          <ion-item>
+            <ion-select 
+              label="Seleccionar Área" 
+              [(ngModel)]="selectedAreaId" 
+              (ionChange)="loadStats()">
+              <ion-select-option *ngFor="let area of areas" [value]="area.id">
+                {{ area.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <div *ngIf="!loading && stats">
+        <!-- Estadísticas -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Resumen de Tareas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">
+                  <div class="stat-box">
+                    <h2>{{ stats.total || 0 }}</h2>
+                    <p>Total</p>
+                  </div>
+                </ion-col>
+                <ion-col size="6">
+                  <div class="stat-box">
+                    <h2>{{ stats.nuevas || 0 }}</h2>
+                    <p>Nuevas</p>
+                  </div>
+                </ion-col>
+                <ion-col size="6">
+                  <div class="stat-box">
+                    <h2>{{ stats.en_progreso || 0 }}</h2>
+                    <p>En Progreso</p>
+                  </div>
+                </ion-col>
+                <ion-col size="6">
+                  <div class="stat-box">
+                    <h2>{{ stats.completadas || 0 }}</h2>
+                    <p>Completadas</p>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Miembros (solo coordinadores) -->
+        <ion-card *ngIf="isCoordinator && members.length > 0">
+          <ion-card-header>
+            <ion-card-title>Miembros del Área</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngFor="let member of members">
+                <ion-avatar slot="start">
+                  <div class="avatar-placeholder">
+                    {{ member.name?.charAt(0) || '?' }}
+                  </div>
+                </ion-avatar>
+                <ion-label>
+                  <h2>{{ member.name }}</h2>
+                  <p>{{ member.email }}</p>
+                </ion-label>
+                <ion-badge slot="end" [color]="member.role === 'COORDINADOR' ? 'primary' : 'medium'">
+                  {{ member.role }}
+                </ion-badge>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <div *ngIf="loading" class="ion-text-center ion-padding">
+        <ion-spinner></ion-spinner>
+      </div>
+    </ion-content>
+</body>
+</html>
