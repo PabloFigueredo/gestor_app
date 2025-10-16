@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+</head>
+<body>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Mis Tareas</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-segment [(ngModel)]="filterStatus" (ionChange)="filterTasks()">
+          <ion-segment-button value="all">
+            <ion-label>Todas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="NUEVA">
+            <ion-label>Nuevas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="EN_PROGRESO">
+            <ion-label>En Progreso</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="COMPLETADA">
+            <ion-label>Completadas</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
+      <ion-list>
+        <ion-item *ngFor="let task of filteredTasks" (click)="openTaskDetail(task)" button>
+          <ion-label>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+            <ion-text color="medium">
+              <small>{{ formatDate(task.due_at) }}</small>
+            </ion-text>
+          </ion-label>
+          <div slot="end" class="task-badges">
+            <ion-badge [color]="getStatusColor(task.status)">
+              {{ task.status }}
+            </ion-badge>
+            <ion-badge [color]="getUrgencyColor(task.urgency)">
+              {{ task.urgency }}
+            </ion-badge>
+          </div>
+        </ion-item>
+      </ion-list>
+
+      <div *ngIf="!loading && filteredTasks.length === 0" class="empty-state">
+        <ion-icon name="checkmark-done-outline" size="large"></ion-icon>
+        <p>No hay tareas {{ filterStatus === 'all' ? '' : filterStatus.toLowerCase() }}</p>
+      </div>
+
+      <div *ngIf="loading" class="ion-text-center ion-padding">
+        <ion-spinner></ion-spinner>
+      </div>
+    </ion-content>
+</body>
+</html>
