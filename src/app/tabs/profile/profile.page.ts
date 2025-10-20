@@ -13,10 +13,12 @@ import { ApiService } from '../../services/api.service';
   styleUrls: [`./profile.page.css`]
 })
 export class ProfilePage {
+  role: string = '';
   userName: string = '';
   userEmail: string = '';
   isCoordinator: boolean = false;
   areasCount: number = 0;
+  loading = true;
 
   constructor(
     private api: ApiService,
@@ -29,14 +31,28 @@ export class ProfilePage {
       const user = JSON.parse(userStr);
       this.userName = user.name;
       this.userEmail = user.email;
-    }
 
-    this.api.me().subscribe({
-      next: (user) => {
-        this.isCoordinator = !!(user.areas && user.areas.length > 0);
-        this.areasCount = user.areas?.length || 0;
-      }
-    });
+      this.api.me().subscribe({
+        next: (user) => {
+          console.log('👤 Usuario recibido:', user);
+
+          // Extraer roles desde las áreas
+          const roles = (user.areas || []).map((a: any) => a.role?.toUpperCase());
+          this.role = roles[0] || 'SIN ROL';
+          this.isCoordinator = roles.includes('COORDINADOR');
+          this.areasCount = user.areas?.length || 0;
+
+          console.log('Rol detectado:', this.role);
+          console.log('¿Es coordinador?', this.isCoordinator);
+
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('❌ Error al cargar usuario:', err);
+          this.loading = false;
+        }
+      });
+    }
   }
 
   logout() {

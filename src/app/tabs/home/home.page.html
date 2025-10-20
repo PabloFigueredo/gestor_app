@@ -26,13 +26,13 @@
       <ion-card>
         <ion-card-content>
           <div class="user-info">
-            <div class="avatar">{{ userName?.charAt(0) }}</div>
+            <div class="avatar">{{ userName.charAt(0) }}</div>
             <div>
               <h2>Bienvenido, {{ userName }}</h2>
               <p>{{ userEmail }}</p>
-              <ion-badge [color]="isCoordinator ? 'primary' : 'secondary'">
-                {{ isCoordinator ? 'Coordinador' : 'Miembro' }}
-              </ion-badge>
+                <ion-badge [color]="isCoordinator ? 'primary' : 'secondary'">
+          {{ isCoordinator ? 'COORDINADOR' : 'MIEMBRO' }}
+        </ion-badge>
             </div>
           </div>
         </ion-card-content>
