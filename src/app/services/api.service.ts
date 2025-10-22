@@ -115,10 +115,10 @@ export class ApiService {
     return this.http.get<Task>(`${this.baseUrl}/tasks/${id}`, this.headers);
   }
 
-  createTask(task: Partial<Task>): Observable<Task> {
-    console.log('📡 POST /tasks', task);
-    return this.http.post<Task>(`${this.baseUrl}/tasks`, task, this.headers);
-  }
+createTask(task: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/tasks`, task, this.headers);
+}
+
 
   updateTask(id: number, task: Partial<Task>): Observable<Task> {
     console.log('📡 PUT /tasks/' + id, task);

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ApiService, Area } from '../../services/api.service';
+import { CreateTaskModal } from '../../pages/create-task/create-task.modal'; // 👈 importa el modal
+import { ModalController } from '@ionic/angular';
 
 // 🔹 Importar y registrar el ícono manualmente
 import { addIcons } from 'ionicons';
@@ -16,7 +18,9 @@ addIcons({ logOutOutline });
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: `./home.page.html`,
   styleUrls: [`./home.page.css`]
+
 })
+
 export class HomePage {
   userName: string = '';
   userEmail: string = '';
@@ -27,7 +31,8 @@ export class HomePage {
 
   constructor(
     private api: ApiService,
-    private router: Router
+    private router: Router,
+    private modalCtrl: ModalController
   ) {}
 
   ngOnInit() {
@@ -114,6 +119,22 @@ export class HomePage {
     setTimeout(() => {
       event.target.complete();
     }, 1000);
+  }
+   // 🟢 Modal para crear una nueva tarea
+  async openCreateTaskModal() {
+    const modal = await this.modalCtrl.create({
+      component: CreateTaskModal,
+      componentProps: {
+        areas: this.areas
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.refresh) {
+      this.loadAreas(); // recargar si se creó una tarea nueva
+    }
   }
 
   // 🔹 Cerrar sesión

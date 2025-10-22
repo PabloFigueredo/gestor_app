@@ -37,6 +37,15 @@
           </div>
         </ion-card-content>
       </ion-card>
+      <!-- Agregar justo debajo del <ion-card> de usuario -->
+      <ion-card *ngIf="isCoordinator">
+        <ion-card-content>
+          <ion-button expand="block" color="success" (click)="openCreateTaskModal()">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Crear nueva tarea
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
 
       <!-- Áreas (para coordinadores) -->
       <div *ngIf="isCoordinator">

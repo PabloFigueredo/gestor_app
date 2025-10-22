@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Crear Tarea</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label>Área</ion-label>
+    <ion-select [(ngModel)]="task.areaId" placeholder="Seleccionar área">
+      <ion-select-option *ngFor="let area of areas" [value]="area.id">
+        {{ area.name }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Título</ion-label>
+    <ion-input [(ngModel)]="task.title" placeholder="Ej: Actualizar página web"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Descripción</ion-label>
+    <ion-textarea [(ngModel)]="task.description" rows="3"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Tipo</ion-label>
+    <ion-select [(ngModel)]="task.taskType">
+      <ion-select-option value="SEGUIMIENTO">Seguimiento</ion-select-option>
+      <ion-select-option value="GENERAL">General</ion-select-option>
+      <ion-select-option value="MANTENIMIENTO">Mantenimiento</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Urgencia</ion-label>
+    <ion-select [(ngModel)]="task.urgency">
+      <ion-select-option value="ALTA">Alta</ion-select-option>
+      <ion-select-option value="MEDIA">Media</ion-select-option>
+      <ion-select-option value="BAJA">Baja</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Fecha límite</ion-label>
+    <ion-datetime
+      presentation="date"
+      [(ngModel)]="task.dueAt"
+      [min]="today">
+    </ion-datetime>
+  </ion-item>
+
+  <ion-button
+    expand="block"
+    color="success"
+    [disabled]="isSaving"
+    (click)="saveTask()">
+    <ion-spinner *ngIf="isSaving" slot="start"></ion-spinner>
+    Guardar Tarea
+  </ion-button>
+</ion-content>
