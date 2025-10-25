@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Task } from '../../services/api.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tasks',
@@ -18,7 +19,7 @@ export class TasksTabPage {
   filterStatus: string = 'all';
   loading = true;
 
-  constructor(private api: ApiService) {}
+constructor(private api: ApiService, private alertCtrl: AlertController) {}
 
   ngOnInit() {
     this.loadTasks();
@@ -31,12 +32,28 @@ export class TasksTabPage {
         this.tasks = tasks;
         this.filterTasks();
         this.loading = false;
+        this.showUrgentAlert();
       },
       error: () => {
         this.loading = false;
       }
     });
   }
+  async showUrgentAlert() {
+  const urgent = this.tasks.filter(
+    t =>
+      this.getDueColor(t.due_at) === 'warning' ||
+      this.getDueColor(t.due_at) === 'danger'
+  );
+  if (urgent.length > 0) {
+    const alert = await this.alertCtrl.create({
+      header: 'Tareas urgentes ⚠️',
+      message: `Tienes ${urgent.length} tarea(s) próximas a vencer o vencidas.`,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+}
 
   filterTasks() {
     if (this.filterStatus === 'all') {
