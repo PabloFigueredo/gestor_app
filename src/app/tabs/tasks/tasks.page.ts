@@ -4,7 +4,13 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Task } from '../../services/api.service';
 import { AlertController } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { star, starOutline } from 'ionicons/icons';
 
+
+interface TaskWithImportant extends Task {
+  isImportant?: boolean;
+}
 @Component({
   selector: 'app-tasks',
   standalone: true,
@@ -14,31 +20,43 @@ import { AlertController } from '@ionic/angular';
   styleUrls: [`./tasks.page.css`]
 })
 export class TasksTabPage {
-  tasks: Task[] = [];
-  filteredTasks: Task[] = [];
+  tasks: TaskWithImportant[] = [];
+  filteredTasks: TaskWithImportant[] = [];
   filterStatus: string = 'all';
   loading = true;
 
-constructor(private api: ApiService, private alertCtrl: AlertController) {}
+constructor(private api: ApiService, private alertCtrl: AlertController) {
+  addIcons({ star, starOutline });
+}
 
   ngOnInit() {
     this.loadTasks();
   }
-
+  toggleImportant(task: any) {
+  task.isImportant = !task.isImportant;
+  const importantTasks = JSON.parse(localStorage.getItem('importantTasks') || '{}');
+  importantTasks[task.id] = task.isImportant;
+  localStorage.setItem('importantTasks', JSON.stringify(importantTasks));
+}
   loadTasks() {
-    this.loading = true;
-    this.api.getMyTasks().subscribe({
-      next: (tasks) => {
-        this.tasks = tasks;
-        this.filterTasks();
-        this.loading = false;
-        this.showUrgentAlert();
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
-  }
+  this.loading = true;
+  this.api.getMyTasks().subscribe({
+    next: (tasks) => {
+      const importantTasks = JSON.parse(localStorage.getItem('importantTasks') || '{}');
+      this.tasks = tasks.map(t => ({
+        ...t,
+        isImportant: importantTasks[t.id] || false
+      }));
+
+      this.filterTasks();     
+      this.loading = false;
+      this.showUrgentAlert(); 
+    },
+    error: () => {
+      this.loading = false;
+    }
+  });
+}
   async showUrgentAlert() {
   const urgent = this.tasks.filter(
     t =>
@@ -56,7 +74,9 @@ constructor(private api: ApiService, private alertCtrl: AlertController) {}
 }
 
   filterTasks() {
-    if (this.filterStatus === 'all') {
+    if (this.filterStatus === 'important') {
+      this.filteredTasks = this.tasks.filter((t: any) => t.isImportant);
+    }else if (this.filterStatus === 'all') {
       this.filteredTasks = this.tasks;
     } else {
       this.filteredTasks = this.tasks.filter(t => t.status === this.filterStatus);

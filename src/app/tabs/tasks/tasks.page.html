@@ -10,7 +10,6 @@
       <ion-toolbar color="primary">
         <ion-title>Mis Tareas</ion-title>
       </ion-toolbar>
-      <!-- 🔍 Barra de búsqueda mejorada -->
     <ion-toolbar>
       <ion-searchbar [(ngModel)]="searchText"
                     placeholder="Buscar tarea..."
@@ -32,6 +31,9 @@
           <ion-segment-button value="COMPLETADA">
             <ion-label>Completadas</ion-label>
           </ion-segment-button>
+          <ion-segment-button value="important">
+            <ion-label>Importantes</ion-label>
+          </ion-segment-button>
         </ion-segment>
       </ion-toolbar>
     </ion-header>
@@ -40,22 +42,24 @@
       <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
-
-<ion-list>
-  <ion-item *ngFor="let task of filteredTasks" (click)="openTaskDetail(task)" button>
+    <ion-list>
+      <ion-item *ngFor="let task of filteredTasks" (click)="openTaskDetail(task)" button>
     <ion-label>
-      <h2>{{ task.title }}</h2>
-      <p>{{ task.description }}</p>
-
-      <!-- 📅 Fecha límite con color dinámico -->
-      <ion-text>
-        <ion-badge [color]="getDueColor(task.due_at)">
-          {{ formatDate(task.due_at) }}
-        </ion-badge>
-      </ion-text>
-    </ion-label>
-
-    <!-- 🏷️ Estado y urgencia -->
+          <div class="task-header">
+            <h2 class="task-title">{{ task.title }}</h2>
+            <ion-icon
+              [name]="task.isImportant ? 'star' : 'star-outline'"
+              color="warning"
+              (click)="toggleImportant(task); $event.stopPropagation();">
+            </ion-icon>
+          </div>
+          <p>{{ task.description }}</p>
+          <ion-text>
+            <ion-badge [color]="getDueColor(task.due_at)">
+              {{ formatDate(task.due_at) }}
+            </ion-badge>
+          </ion-text>
+        </ion-label>
     <div slot="end" class="task-badges">
       <ion-badge [color]="getStatusColor(task.status)">
         {{ task.status }}
@@ -66,8 +70,6 @@
     </div>
   </ion-item>
 </ion-list>
-
-
       <div *ngIf="!loading && filteredTasks.length === 0" class="empty-state">
         <ion-icon name="checkmark-done-outline" size="large"></ion-icon>
         <p>No hay tareas {{ filterStatus === 'all' ? '' : filterStatus.toLowerCase() }}</p>
