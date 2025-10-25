@@ -10,8 +10,16 @@
       <ion-toolbar color="primary">
         <ion-title>Mis Tareas</ion-title>
       </ion-toolbar>
+      <!-- 🔍 Barra de búsqueda mejorada -->
+    <ion-toolbar>
+      <ion-searchbar [(ngModel)]="searchText"
+                    placeholder="Buscar tarea..."
+                    (ionInput)="applyFilters()">
+      </ion-searchbar>
+    </ion-toolbar>
+
       <ion-toolbar>
-        <ion-segment [(ngModel)]="filterStatus" (ionChange)="filterTasks()">
+        <ion-segment [(ngModel)]="filterStatus" (ionChange)="applyFilters()">
           <ion-segment-button value="all">
             <ion-label>Todas</ion-label>
           </ion-segment-button>

@@ -45,6 +45,28 @@ export class TasksTabPage {
       this.filteredTasks = this.tasks.filter(t => t.status === this.filterStatus);
     }
   }
+  searchText: string = '';
+
+applyFilters() {
+  let filtered = this.tasks;
+  
+  // Filtrar por estado
+  if (this.filterStatus !== 'all') {
+    filtered = filtered.filter(t => t.status === this.filterStatus);
+  }
+
+  // Filtrar por texto
+  if (this.searchText.trim() !== '') {
+    const term = this.searchText.toLowerCase();
+    filtered = filtered.filter(t => 
+      t.title.toLowerCase().includes(term) || 
+      (t.description?.toLowerCase().includes(term))
+    );
+  }
+
+  this.filteredTasks = filtered;
+}
+
 
   openTaskDetail(task: Task) {
     console.log('Abrir detalle:', task);
