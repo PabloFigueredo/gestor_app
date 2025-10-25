@@ -45,6 +45,14 @@ export class TasksTabPage {
       this.filteredTasks = this.tasks.filter(t => t.status === this.filterStatus);
     }
   }
+  getDueColor(due_at: string | null): string {
+  if (!due_at) return 'medium';
+  const diffDays = (new Date(due_at).getTime() - Date.now()) / (1000 * 3600 * 24);
+  if (diffDays < 0) return 'danger';       // vencida
+  if (diffDays <= 2) return 'warning';     // cerca
+  return 'success';                        // normal
+}
+
   searchText: string = '';
 
 applyFilters() {

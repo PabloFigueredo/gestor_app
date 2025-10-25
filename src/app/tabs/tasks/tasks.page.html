@@ -41,25 +41,32 @@
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <ion-list>
-        <ion-item *ngFor="let task of filteredTasks" (click)="openTaskDetail(task)" button>
-          <ion-label>
-            <h2>{{ task.title }}</h2>
-            <p>{{ task.description }}</p>
-            <ion-text color="medium">
-              <small>{{ formatDate(task.due_at) }}</small>
-            </ion-text>
-          </ion-label>
-          <div slot="end" class="task-badges">
-            <ion-badge [color]="getStatusColor(task.status)">
-              {{ task.status }}
-            </ion-badge>
-            <ion-badge [color]="getUrgencyColor(task.urgency)">
-              {{ task.urgency }}
-            </ion-badge>
-          </div>
-        </ion-item>
-      </ion-list>
+<ion-list>
+  <ion-item *ngFor="let task of filteredTasks" (click)="openTaskDetail(task)" button>
+    <ion-label>
+      <h2>{{ task.title }}</h2>
+      <p>{{ task.description }}</p>
+
+      <!-- 📅 Fecha límite con color dinámico -->
+      <ion-text>
+        <ion-badge [color]="getDueColor(task.due_at)">
+          {{ formatDate(task.due_at) }}
+        </ion-badge>
+      </ion-text>
+    </ion-label>
+
+    <!-- 🏷️ Estado y urgencia -->
+    <div slot="end" class="task-badges">
+      <ion-badge [color]="getStatusColor(task.status)">
+        {{ task.status }}
+      </ion-badge>
+      <ion-badge [color]="getUrgencyColor(task.urgency)">
+        {{ task.urgency }}
+      </ion-badge>
+    </div>
+  </ion-item>
+</ion-list>
+
 
       <div *ngIf="!loading && filteredTasks.length === 0" class="empty-state">
         <ion-icon name="checkmark-done-outline" size="large"></ion-icon>
