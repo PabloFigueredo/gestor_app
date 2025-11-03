@@ -16,16 +16,16 @@ export class CreateTaskModal {
 
   task = {
     areaId: null as number | null,
-    assignedToUserId: null as number | null,  
+    assignedToUserId: null as number | null,
     title: '',
     description: '',
-    taskType: 'GENERAL',
+    taskType: 'SIMPLE',   // valor por defecto válido para la API
     urgency: 'MEDIA',
     dueAt: ''
   };
 
-  members: any[] = [];     
-  loadingMembers = false;    
+  members: any[] = [];
+  loadingMembers = false;
   isSaving = false;
   today = new Date().toISOString();
 
@@ -35,7 +35,7 @@ export class CreateTaskModal {
     private toastCtrl: ToastController
   ) {}
 
-  // Cuando cambia el área
+  // 🔹 Se ejecuta al cambiar de área
   onAreaChange(ev: any) {
     const areaId = ev.detail.value;
     this.task.areaId = areaId;
@@ -65,19 +65,20 @@ export class CreateTaskModal {
       return;
     }
 
-
     const payload: any = {
       areaId: this.task.areaId,
       title: this.task.title,
-      description: this.task.description,
-      taskType: this.task.taskType,
-      urgency: this.task.urgency,
+      description: this.task.description || null,
+      taskType: this.task.taskType,     // SIMPLE | SEGUIMIENTO
+      urgency: this.task.urgency,       // BAJA | MEDIA | ALTA
       dueAt: this.task.dueAt || null
     };
 
     if (this.task.assignedToUserId) {
       payload.assignedToUserId = this.task.assignedToUserId;
     }
+
+    console.log('📦 Payload createTask:', payload);
 
     this.isSaving = true;
     this.api.createTask(payload).subscribe({
@@ -90,7 +91,11 @@ export class CreateTaskModal {
       error: (err) => {
         console.error('❌ Error al crear tarea:', err);
         this.isSaving = false;
-        this.showToast('❌ Error al crear tarea');
+        this.showToast(
+          err?.error?.error
+            ? `❌ ${err.error.error}`
+            : '❌ Error al crear tarea'
+        );
       }
     });
   }

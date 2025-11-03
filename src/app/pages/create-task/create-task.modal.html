@@ -14,7 +14,7 @@
     <ion-select
       [(ngModel)]="task.areaId"
       placeholder="Seleccionar área"
-      (ionChange)="onAreaChange($event)" 
+      (ionChange)="onAreaChange($event)"
     >
       <ion-select-option *ngFor="let area of areas" [value]="area.id">
         {{ area.name }}
@@ -40,7 +40,7 @@
     <ion-label>Esta área no tiene miembros</ion-label>
   </ion-item>
 
-  <!-- (Opcional) loader mientras trae miembros -->
+  <!-- Loader mientras trae miembros -->
   <ion-item *ngIf="loadingMembers">
     <ion-label>Cargando miembros...</ion-label>
     <ion-spinner slot="end"></ion-spinner>
@@ -49,22 +49,28 @@
   <!-- TÍTULO -->
   <ion-item>
     <ion-label position="stacked">Título</ion-label>
-    <ion-input [(ngModel)]="task.title" placeholder="Ej: Actualizar página web"></ion-input>
+    <ion-input
+      [(ngModel)]="task.title"
+      placeholder="Ej: Actualizar página web">
+    </ion-input>
   </ion-item>
 
   <!-- DESCRIPCIÓN -->
   <ion-item>
     <ion-label position="stacked">Descripción</ion-label>
-    <ion-textarea [(ngModel)]="task.description" rows="3"></ion-textarea>
+    <ion-textarea
+      [(ngModel)]="task.description"
+      rows="3">
+    </ion-textarea>
   </ion-item>
 
   <!-- TIPO -->
   <ion-item>
     <ion-label>Tipo</ion-label>
     <ion-select [(ngModel)]="task.taskType">
+      <!-- valores válidos según tu API -->
+      <ion-select-option value="SIMPLE">General</ion-select-option>
       <ion-select-option value="SEGUIMIENTO">Seguimiento</ion-select-option>
-      <ion-select-option value="GENERAL">General</ion-select-option>
-      <ion-select-option value="MANTENIMIENTO">Mantenimiento</ion-select-option>
     </ion-select>
   </ion-item>
 
