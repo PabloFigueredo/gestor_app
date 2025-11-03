@@ -213,11 +213,14 @@ createTask(task: any): Observable<any> {
     );
   }
 
+  // 👇 CAMBIAR ESTO
   getStats(areaId: number): Observable<any> {
-    console.log('📡 GET /areas/' + areaId + '/stats');
-    return this.http.get(`${this.baseUrl}/areas/${areaId}/stats`, this.headers);
+    console.log('📡 GET /summary/area/' + areaId);
+    return this.http.get(
+      `${this.baseUrl}/summary/area/${areaId}`,
+      this.headers
+    );
   }
-
   // ==================== TASK HISTORY ====================
   getTaskHistory(taskId: number): Observable<any[]> {
     console.log('📡 GET /tasks/' + taskId + '/history');

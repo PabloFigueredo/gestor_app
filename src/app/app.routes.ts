@@ -32,7 +32,7 @@ export const routes: Routes = [
       },
       {
         path: 'stats',
-        loadComponent: () => import('./tabs/stats/stats.page').then(m => m.StatsTabPage)
+        loadComponent: () => import('./tabs/stats/stats.page').then(m => m.StatsPage)
       },
       {
         path: 'profile',

@@ -1,105 +1,178 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stats</title>
-</head>
-<body>
-     <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>Estadísticas</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Estadísticas</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-    <ion-content>
-      <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-        <ion-refresher-content></ion-refresher-content>
-      </ion-refresher>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-      <!-- Selector de área (para coordinadores) -->
-      <ion-card *ngIf="isCoordinator && areas.length > 0">
+  <!-- Selector de área para coordinadores -->
+  <ion-card *ngIf="isCoordinator && areas.length > 0">
+    <ion-card-header>
+      <ion-card-title>Área</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-select
+          label="Seleccionar Área"
+          [(ngModel)]="selectedAreaId"
+          (ionChange)="onAreaChange()">
+          <ion-select-option *ngFor="let area of areas" [value]="area.id">
+            {{ area.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!loading">
+    <!-- Si NO hay stats (por error o sin datos) -->
+    <div *ngIf="!hasStats" class="ion-text-center ion-padding">
+      <p>No hay estadísticas disponibles para esta área.</p>
+    </div>
+
+    <!-- Si hay stats (o al menos estructura) -->
+    <ng-container *ngIf="hasStats">
+      <!-- Resumen numérico -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Resumen de tareas</ion-card-title>
+        </ion-card-header>
         <ion-card-content>
-          <ion-item>
-            <ion-select 
-              label="Seleccionar Área" 
-              [(ngModel)]="selectedAreaId" 
-              (ionChange)="loadStats()">
-              <ion-select-option *ngFor="let area of areas" [value]="area.id">
-                {{ area.name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <div class="stat-box">
+                  <h2>{{ total }}</h2>
+                  <p>Total</p>
+                </div>
+              </ion-col>
+              <ion-col size="6">
+                <div class="stat-box">
+                  <h2>{{ completadas }}</h2>
+                  <p>Completadas</p>
+                </div>
+              </ion-col>
+              <ion-col size="6">
+                <div class="stat-box">
+                  <h2>{{ enProgreso }}</h2>
+                  <p>En progreso</p>
+                </div>
+              </ion-col>
+              <ion-col size="6">
+                <div class="stat-box">
+                  <h2>{{ bloqueadas }}</h2>
+                  <p>Bloqueadas</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-card-content>
       </ion-card>
 
-      <div *ngIf="!loading && stats">
-        <!-- Estadísticas -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Resumen de Tareas</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-grid>
-              <ion-row>
-                <ion-col size="6">
-                  <div class="stat-box">
-                    <h2>{{ stats.total || 0 }}</h2>
-                    <p>Total</p>
-                  </div>
-                </ion-col>
-                <ion-col size="6">
-                  <div class="stat-box">
-                    <h2>{{ stats.nuevas || 0 }}</h2>
-                    <p>Nuevas</p>
-                  </div>
-                </ion-col>
-                <ion-col size="6">
-                  <div class="stat-box">
-                    <h2>{{ stats.en_progreso || 0 }}</h2>
-                    <p>En Progreso</p>
-                  </div>
-                </ion-col>
-                <ion-col size="6">
-                  <div class="stat-box">
-                    <h2>{{ stats.completadas || 0 }}</h2>
-                    <p>Completadas</p>
-                  </div>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
+      <!-- “Gráfico” de porcentaje completado -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Avance del área</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="ion-text-center">
+            {{ completionPercent }}% de tareas completadas
+          </p>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" [style.width.%]="completionPercent"></div>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-        <!-- Miembros (solo coordinadores) -->
-        <ion-card *ngIf="isCoordinator && members.length > 0">
-          <ion-card-header>
-            <ion-card-title>Miembros del Área</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-list>
-              <ion-item *ngFor="let member of members">
-                <ion-avatar slot="start">
-                  <div class="avatar-placeholder">
-                    {{ member.name?.charAt(0) || '?' }}
-                  </div>
-                </ion-avatar>
-                <ion-label>
-                  <h2>{{ member.name }}</h2>
-                  <p>{{ member.email }}</p>
-                </ion-label>
-                <ion-badge slot="end" [color]="member.role === 'COORDINADOR' ? 'primary' : 'medium'">
-                  {{ member.role }}
-                </ion-badge>
-              </ion-item>
-            </ion-list>
-          </ion-card-content>
-        </ion-card>
-      </div>
+      <!-- Distribución por estado -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Por estado</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngFor="let row of statusDistribution" class="dist-row">
+            <div class="dist-label">
+              <span>{{ row.label }}</span>
+              <span>{{ row.count }} ({{ getPercent(row.count) }}%)</span>
+            </div>
+            <div class="progress-bar small">
+              <div class="progress-bar-fill" [style.width.%]="getPercent(row.count)"></div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-      <div *ngIf="loading" class="ion-text-center ion-padding">
-        <ion-spinner></ion-spinner>
-      </div>
-    </ion-content>
-</body>
-</html>
+      <!-- Distribución por tipo (SIMPLE/SEGUIMIENTO), si el backend lo manda -->
+      <ion-card *ngIf="seguimientoPercent !== null">
+        <ion-card-header>
+          <ion-card-title>Tipo de tareas</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="ion-text-center">
+            {{ seguimientoPercent }}% de las tareas son de seguimiento
+          </p>
+          <div class="progress-bar">
+            <div class="progress-bar-fill seguimiento" [style.width.%]="seguimientoPercent"></div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Miembros del área (solo coordinador) -->
+      <ion-card *ngIf="isCoordinator && members.length > 0">
+        <ion-card-header>
+          <ion-card-title>Miembros del área</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let member of members">
+              <ion-avatar slot="start">
+                <div class="avatar-placeholder">
+                  {{ member.name?.charAt(0) || '?' }}
+                </div>
+              </ion-avatar>
+              <ion-label>
+                <h2>{{ member.name }}</h2>
+                <p>{{ member.email }}</p>
+              </ion-label>
+              <ion-badge
+                slot="end"
+                [color]="member.role === 'COORDINADOR' ? 'primary' : 'medium'">
+                {{ member.role }}
+              </ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Últimos comentarios (si vienen en stats) -->
+      <ion-card *ngIf="latestComments.length > 0">
+        <ion-card-header>
+          <ion-card-title>Últimos comentarios</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let c of latestComments">
+              <ion-label>
+                <h3>{{ c.author_name || 'Usuario' }}</h3>
+                <p>{{ c.body }}</p>
+                <p class="ion-text-muted">
+                  {{ c.task_title || ('Tarea #' + c.task_id) }} · {{ formatDate(c.created_at) }}
+                </p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+  </div>
+
+  <!-- Spinner mientras carga -->
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+  </div>
+</ion-content>
