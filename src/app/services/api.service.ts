@@ -27,13 +27,14 @@ export interface Task {
   assigned_by_user_id: number;
   title: string;
   description: string | null;
-  task_type: 'SIMPLE' | 'COMPLEJA';
-  urgency: 'BAJA' | 'MEDIA' | 'ALTA';
-  status: 'NUEVA' | 'EN_PROGRESO' | 'COMPLETADA' | 'CANCELADA';
+  task_type: 'SIMPLE' | 'SEGUIMIENTO'; // 👈 ANTES: SIMPLE | COMPLEJA
+  urgency: 'BAJA' | 'MEDIA' | 'ALTA' | 'CRITICA'; // 👈 añadimos CRITICA
+  status: 'NUEVA' | 'EN_PROGRESO' | 'EN_ESPERA' | 'BLOQUEADA' | 'COMPLETADA' | 'CANCELADA'; // 👈 añadimos EN_ESPERA y BLOQUEADA
   due_at: string | null;
   created_at: string;
   updated_at: string;
 }
+
 
 export interface TaskComment {
   id: number;
@@ -41,8 +42,9 @@ export interface TaskComment {
   author_id: number;
   body: string;
   created_at: string;
-  author?: User; // Población opcional
+  author_name?: string; // 👈 coincide con el SELECT
 }
+
 
 export interface TaskSubtask {
   id: number;

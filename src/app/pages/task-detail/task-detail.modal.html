@@ -1,0 +1,155 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Detalle de tarea</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeWithSave()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Info principal de la tarea -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ task.title }}</ion-card-title>
+      <ion-card-subtitle>
+        <!-- 👇 aquí estaba el error: ahora usamos 'SEGUIMIENTO' -->
+        <ion-badge [color]="task.task_type === 'SEGUIMIENTO' ? 'tertiary' : 'medium'">
+          {{ task.task_type === 'SEGUIMIENTO' ? 'Seguimiento' : 'Simple' }}
+        </ion-badge>
+
+        <ion-badge
+          [color]="task.urgency === 'ALTA'
+                     ? 'danger'
+                     : (task.urgency === 'MEDIA'
+                         ? 'warning'
+                         : (task.urgency === 'CRITICA'
+                             ? 'danger'
+                             : 'success'))">
+          {{ task.urgency }}
+        </ion-badge>
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p *ngIf="task.description">{{ task.description }}</p>
+      <p *ngIf="!task.description" class="ion-text-muted">Sin descripción</p>
+
+      <ion-item lines="none">
+        <ion-label>
+          <strong>Estado actual:</strong>
+          <ion-badge
+            [color]="task.status === 'COMPLETADA'
+                       ? 'success'
+                       : (task.status === 'EN_PROGRESO'
+                           ? 'warning'
+                           : (task.status === 'CANCELADA'
+                               ? 'danger'
+                               : 'medium'))">
+            {{ task.status }}
+          </ion-badge>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label>
+          <strong>Fecha límite:</strong>
+          {{ task.due_at ? (task.due_at | date:'dd MMM yyyy') : 'Sin fecha límite' }}
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Cambiar estado -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Cambiar estado</ion-card-title>
+      <ion-card-subtitle *ngIf="isSeguimiento">
+        Esta tarea es de seguimiento, se recomienda dejar comentarios al cambiar estado.
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Nuevo estado</ion-label>
+        <ion-select [(ngModel)]="selectedStatus">
+          <ion-select-option value="NUEVA">Nueva</ion-select-option>
+          <ion-select-option value="EN_PROGRESO">En progreso</ion-select-option>
+          <ion-select-option value="EN_ESPERA">En espera</ion-select-option>
+          <ion-select-option value="BLOQUEADA">Bloqueada</ion-select-option>
+          <ion-select-option value="COMPLETADA">Completada</ion-select-option>
+          <ion-select-option value="CANCELADA">Cancelada</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label position="stacked">Nota (opcional)</ion-label>
+        <ion-textarea
+          [(ngModel)]="statusNote"
+          rows="2"
+          placeholder="Describe el cambio de estado">
+        </ion-textarea>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        color="primary"
+        [disabled]="savingStatus"
+        (click)="updateStatus()">
+        <ion-spinner *ngIf="savingStatus" slot="start"></ion-spinner>
+        Actualizar estado
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Comentarios -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Comentarios</ion-card-title>
+      <ion-card-subtitle *ngIf="isSeguimiento">
+        Usa los comentarios para detallar el seguimiento y los avances.
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <!-- Loader -->
+      <div *ngIf="loadingComments" class="ion-text-center ion-padding">
+        <ion-spinner></ion-spinner>
+      </div>
+
+      <!-- Lista de comentarios -->
+      <ion-list *ngIf="!loadingComments && comments.length > 0">
+        <ion-item *ngFor="let c of comments">
+          <ion-label>
+            <h3>{{ c.author_name || 'Usuario' }}</h3>
+            <p>{{ c.body }}</p>
+            <p class="ion-text-muted">{{ formatDate(c.created_at) }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+      <p *ngIf="!loadingComments && comments.length === 0" class="ion-text-muted">
+        Aún no hay comentarios.
+      </p>
+
+      <!-- Agregar comentario -->
+      <ion-item lines="none">
+        <ion-label position="stacked">Nuevo comentario</ion-label>
+        <ion-textarea
+          [(ngModel)]="commentText"
+          rows="3"
+          placeholder="Escribe un comentario sobre el avance...">
+        </ion-textarea>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        color="secondary"
+        [disabled]="savingComment"
+        (click)="addComment()">
+        <ion-spinner *ngIf="savingComment" slot="start"></ion-spinner>
+        Agregar comentario
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
