@@ -1,4 +1,3 @@
-
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -18,20 +17,23 @@ export class LoginPage {
   email = '';
   loading = false;
   errorMessage = '';
+  currentYear = new Date().getFullYear(); // ✅ Soluciona el error
 
-  constructor(
-    private api: ApiService, 
-    private router: Router
-  ) {
+  constructor(private api: ApiService, private router: Router) {
     console.log('✅ LoginPage constructor ejecutado');
   }
 
   ngOnInit() {
-    // Limpiar cualquier sesión previa
     this.api.clearToken();
   }
 
+  private normalizeEmail(v: string): string {
+    return (v || '').trim().toLowerCase();
+  }
+
   login() {
+    this.email = this.normalizeEmail(this.email);
+
     if (!this.email || !this.email.includes('@')) {
       this.errorMessage = 'Por favor ingresa un email válido';
       return;
@@ -47,15 +49,10 @@ export class LoginPage {
         this.api.setToken(res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
 
-        // Obtener datos completos del usuario
         this.api.me().subscribe({
           next: (user) => {
             console.log('✅ Usuario completo:', user);
-            
-            // Redirigir a tabs (funciona para coordinadores y miembros)
-            console.log('🚀 Navegando a /tabs');
             this.router.navigateByUrl('/tabs');
-            
             this.loading = false;
           },
           error: (err) => {
@@ -67,7 +64,8 @@ export class LoginPage {
       },
       error: (err) => {
         console.error('❌ Error en login:', err);
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión. Verifica tu email.';
+        this.errorMessage =
+          err?.error?.message || 'Error al iniciar sesión. Verifica tu email.';
         this.loading = false;
       }
     });

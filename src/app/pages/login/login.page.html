@@ -1,52 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>Iniciar Sesión</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<ion-header class="auth-header" translucent>
+  <ion-toolbar class="auth-toolbar">
+    <ion-title class="brand">
+      <ion-icon name="apps-outline" aria-hidden="true"></ion-icon>
+      GestionApp
+    </ion-title>
 
-    <ion-content class="ion-padding">
-      <div class="login-container">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Bienvenido</ion-card-title>
-            <ion-card-subtitle>Ingresa tu email para continuar</ion-card-subtitle>
-          </ion-card-header>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" routerLink="/ayuda" aria-label="Abrir ayuda">Ayuda</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-          <ion-card-content>
-            <ion-item>
-              <ion-input 
-                label="Email" 
+<ion-content [fullscreen]="true" class="auth-gradient">
+  <div class="bg-blob blob-1" aria-hidden="true"></div>
+  <div class="bg-blob blob-2" aria-hidden="true"></div>
+
+  <div class="auth-wrapper">
+    <section class="left-pane">
+      <h1>
+        Bienvenido a <span>GestionApp</span>
+      </h1>
+      <p class="subtitle">
+        Centraliza tus tareas, equipos y reportes en un solo lugar.
+      </p>
+
+      <ul class="bullets" aria-label="Beneficios clave">
+        <li>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          SSO por correo seguro
+        </li>
+        <li>
+          <ion-icon name="time-outline"></ion-icon>
+          Acceso en segundos
+        </li>
+        <li>
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          Métricas en tiempo real
+        </li>
+      </ul>
+
+      <div class="compliance">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        Datos protegidos y cifrados.
+      </div>
+    </section>
+
+    <section class="right-pane">
+      <ion-card class="glass">
+        <ion-card-header>
+          <ion-card-title>Iniciar sesión</ion-card-title>
+          <ion-card-subtitle>Usa tu correo corporativo</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          <form (ngSubmit)="login()" autocomplete="on" novalidate>
+            <ion-item class="field" lines="full">
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Correo electrónico"
                 labelPlacement="floating"
                 type="email"
+                inputmode="email"
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                enterkeyhint="go"
                 [(ngModel)]="email"
+                name="email"
                 [disabled]="loading"
-                (keyup.enter)="login()">
+                (ionInput)="email = (email || '').toLowerCase()"
+                (keyup.enter)="login()"
+                required>
               </ion-input>
             </ion-item>
 
-            <ion-button 
-              expand="block" 
-              (click)="login()"
+            <ion-button
+              type="submit"
+              expand="block"
+              size="large"
               [disabled]="loading || !email"
-              class="ion-margin-top">
+              class="cta">
               <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
-              <span *ngIf="!loading">Ingresar</span>
+              <span *ngIf="!loading">Continuar</span>
             </ion-button>
 
             <ion-text color="danger" *ngIf="errorMessage">
-              <p class="ion-text-center">{{ errorMessage }}</p>
+              <p class="err">{{ errorMessage }}</p>
             </ion-text>
-          </ion-card-content>
-        </ion-card>
+
+            <div class="fine-print">
+              Al continuar aceptas nuestros
+              <a routerLink="/terminos">Términos</a> y
+              <a routerLink="/privacidad">Política de Privacidad</a>.
+            </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="support">
+        ¿Problemas para ingresar?
+        <a routerLink="/soporte">Contactar soporte</a>
       </div>
-    </ion-content>
-</body>
-</html>
+    </section>
+  </div>
+
+  <ion-footer class="auth-footer">
+    <div class="footer-inner">
+      © {{ currentYear }} GestionApp — v1.0.0
+    </div>
+  </ion-footer>
+</ion-content>
