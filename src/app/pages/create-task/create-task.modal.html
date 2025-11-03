@@ -8,25 +8,57 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- ÁREA -->
   <ion-item>
     <ion-label>Área</ion-label>
-    <ion-select [(ngModel)]="task.areaId" placeholder="Seleccionar área">
+    <ion-select
+      [(ngModel)]="task.areaId"
+      placeholder="Seleccionar área"
+      (ionChange)="onAreaChange($event)" 
+    >
       <ion-select-option *ngFor="let area of areas" [value]="area.id">
         {{ area.name }}
       </ion-select-option>
     </ion-select>
   </ion-item>
 
+  <!-- USUARIO RESPONSABLE -->
+  <ion-item *ngIf="task.areaId && members.length">
+    <ion-label>Asignar a</ion-label>
+    <ion-select
+      [(ngModel)]="task.assignedToUserId"
+      placeholder="Seleccionar usuario"
+    >
+      <ion-select-option *ngFor="let m of members" [value]="m.id">
+        {{ m.name }} ({{ m.email }})
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Mensaje si no hay miembros -->
+  <ion-item *ngIf="task.areaId && !members.length && !loadingMembers">
+    <ion-label>Esta área no tiene miembros</ion-label>
+  </ion-item>
+
+  <!-- (Opcional) loader mientras trae miembros -->
+  <ion-item *ngIf="loadingMembers">
+    <ion-label>Cargando miembros...</ion-label>
+    <ion-spinner slot="end"></ion-spinner>
+  </ion-item>
+
+  <!-- TÍTULO -->
   <ion-item>
     <ion-label position="stacked">Título</ion-label>
     <ion-input [(ngModel)]="task.title" placeholder="Ej: Actualizar página web"></ion-input>
   </ion-item>
 
+  <!-- DESCRIPCIÓN -->
   <ion-item>
     <ion-label position="stacked">Descripción</ion-label>
     <ion-textarea [(ngModel)]="task.description" rows="3"></ion-textarea>
   </ion-item>
 
+  <!-- TIPO -->
   <ion-item>
     <ion-label>Tipo</ion-label>
     <ion-select [(ngModel)]="task.taskType">
@@ -36,6 +68,7 @@
     </ion-select>
   </ion-item>
 
+  <!-- URGENCIA -->
   <ion-item>
     <ion-label>Urgencia</ion-label>
     <ion-select [(ngModel)]="task.urgency">
@@ -45,6 +78,7 @@
     </ion-select>
   </ion-item>
 
+  <!-- FECHA LÍMITE -->
   <ion-item>
     <ion-label position="stacked">Fecha límite</ion-label>
     <ion-datetime
@@ -54,6 +88,7 @@
     </ion-datetime>
   </ion-item>
 
+  <!-- BOTÓN GUARDAR -->
   <ion-button
     expand="block"
     color="success"
